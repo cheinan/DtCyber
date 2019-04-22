@@ -337,6 +337,7 @@ extern u32 rtcClock;
 extern ModelFeatures features;
 extern ModelType modelType;
 extern char persistDir[];
+extern char xFontFamilyName[];
 extern u16 npuNetTelnetPort;
 extern u16 npuNetTcpConns;
 

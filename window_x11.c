@@ -322,6 +322,7 @@ void *windowThread(void *param)
     unsigned long retRemaining;
     unsigned long retLength; 
     int usageDisplayCount = 0;
+    char xFontName[256];
 
     /*
     **  Open the X11 display.
@@ -374,9 +375,12 @@ void *windowThread(void *param)
     /*
     **  Load three Cyber fonts.
     */
-    hSmallFont = XLoadFont(disp, "-*-lucidatypewriter-medium-*-*-*-10-*-*-*-*-*-*-*\0");
-    hMediumFont = XLoadFont(disp, "-*-lucidatypewriter-medium-*-*-*-14-*-*-*-*-*-*-*\0");
-    hLargeFont = XLoadFont(disp, "-*-lucidatypewriter-medium-*-*-*-24-*-*-*-*-*-*-*\0");
+    snprintf(xFontName, sizeof(xFontName), "-*-%s-medium-*-*-*-%d-*-*-*-*-*-*-*", xFontFamilyName, 10);
+    hSmallFont = XLoadFont(disp, xFontName);
+    snprintf(xFontName, sizeof(xFontName), "-*-%s-medium-*-*-*-%d-*-*-*-*-*-*-*", xFontFamilyName, 14);
+    hMediumFont = XLoadFont(disp, xFontName);
+    snprintf(xFontName, sizeof(xFontName), "-*-%s-medium-*-*-*-%d-*-*-*-*-*-*-*", xFontFamilyName, 24);
+    hLargeFont = XLoadFont(disp, xFontName);
 
     /*
     **  Setup fore- and back-ground colors.

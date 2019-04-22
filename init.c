@@ -85,6 +85,7 @@ extern u8 deadstartCount;
 ModelFeatures features;
 ModelType modelType;
 char persistDir[256];
+char xFontFamilyName[40];
 
 /*
 **  -----------------
@@ -496,6 +497,11 @@ static void initCyber(char *config)
     */
     initGetInteger("telnetconns", 4, &conns);
     mux6676TelnetConns = (u16)conns;
+
+    /*
+    ** Get the X Windows Font Family name override, use default if not specified.
+    */
+    initGetString("xfontfamily", "lucidatypewriter", xFontFamilyName, sizeof(xFontFamilyName));
     }
 
 /*--------------------------------------------------------------------------

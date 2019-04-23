@@ -36,6 +36,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <errno.h>
 
 #include "const.h"
 #include "types.h"
@@ -193,7 +195,6 @@ u32 extMaxMemory;
 **  Private Variables
 **  -----------------
 */
-//static FILE *cmHandle;
 static int cmFd;
 static int cmByteCount;
 static FILE *ecsHandle;
@@ -319,13 +320,6 @@ void cpuInit(char *model, u32 memory, u32 emBanks, ExtMemory emType)
     /*
     **  Allocate configured central memory.
     */
-    /*cpMem = calloc(memory, sizeof(CpWord));
-    if (cpMem == NULL)
-        {
-        fprintf(stderr, "Failed to allocate CPU memory\n");
-        exit(1);
-        }*/
-
     cpuMaxMemory = memory;
 
     switch (emType)
@@ -360,30 +354,11 @@ void cpuInit(char *model, u32 memory, u32 emBanks, ExtMemory emType)
         cmFd = open(fileName, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
         cmByteCount = memory * sizeof(CpWord);
         cpMem = mmap(NULL, cmByteCount, PROT_READ | PROT_WRITE, MAP_SHARED, cmFd, 0);
-        //cmHandle = fopen(fileName, "r+b");
-        //if (cmHandle != NULL)
-            //{
-            ///*
-            //**  Read CM contents.
-            //*/
-            //if (fread(cpMem, sizeof(CpWord), cpuMaxMemory, cmHandle) != cpuMaxMemory)
-                //{
-                //printf("Unexpected length of CM backing file, clearing CM\n");
-                //memset(cpMem, 0, cpuMaxMemory);
-                //}
-            //}
-        //else
-            //{
-            ///*
-            //**  Create a new file.
-            //*/
-            //cmHandle = fopen(fileName, "w+b");
-            //if (cmHandle == NULL)
-                //{
-                //fprintf(stderr, "Failed to create CM backing file\n");
-                //exit(1);
-                //}
-            //}
+        if (cpMem == MAP_FAILED)
+            {
+            printf("Unable to map CM backing file \"%s\", errno = %d", fileName, errno);
+            exit(1);
+            }
 
         /*
         **  Try to open existing ECS file.
@@ -433,20 +408,6 @@ void cpuInit(char *model, u32 memory, u32 emBanks, ExtMemory emType)
 void cpuTerminate(void)
     {
     /*
-    **  Optionally save CM.
-    */
-    //if (cmHandle != NULL)
-        //{
-        //fseek(cmHandle, 0, SEEK_SET);
-        //if (fwrite(cpMem, sizeof(CpWord), cpuMaxMemory, cmHandle) != cpuMaxMemory)
-            //{
-            //fprintf(stderr, "Error writing CM backing file\n");
-            //}
-
-        //fclose(cmHandle);
-        //}
-
-    /*
     **  Optionally save ECS.
     */
     if (ecsHandle != NULL)
@@ -463,9 +424,8 @@ void cpuTerminate(void)
     /*
     **  Free allocated memory.
     */
-    //free(cpMem);
     munmap(cpMem, cmByteCount);
-    //close(cmFd);
+    close(cmFd);
     free(extMem);
     }
 

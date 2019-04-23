@@ -1,3 +1,4 @@
 Makefile
 dtcyber
 *.o
+log.txt

@@ -29,12 +29,11 @@ int main()
         exit(2);
     }
 
-    // TODO: Fix this unholy HACK where the address of the EM is hard-coded.
-    long* cyberBuffer = static_cast<long*>(cyberMemPtr) + 0xc32aa;
-    for (ptrdiff_t offset = 0; offset < 10; offset++) {
-        std::cout << std::oct << *(cyberBuffer + offset) << '\n';
-    }
-    std::cout << std::oct << (*cyberBuffer)++ << '\n';
+    unsigned long cmAddress = 0;
+    std::cout << "Enter an octal CM address in words: o";
+    std::cin >> std::oct >> cmAddress;
+    unsigned long * memmapAddress = reinterpret_cast<unsigned long *>(cyberMemPtr) + cmAddress;
+    std::cout << std::oct << "o" << *memmapAddress << '\n';
 
     return 0;
 }
